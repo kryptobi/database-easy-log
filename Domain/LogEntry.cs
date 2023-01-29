@@ -15,8 +15,9 @@ public class LogEntry
     [MaxLength(MAX_LENGTH_VALUE_TYPES)] public string? PreviousValue { get; private set; }
     [MaxLength(MAX_LENGTH_VALUE_TYPES)] public string? CurrentValue { get; private set; }
     public DateTime ChangedAt { get; private set; }
-    public Guid ChangedBy { get; private init; }
+    public Guid? ChangedBy { get; private init; }
     [MaxLength(MAX_LENGHT)] public LogType LogType { get; set; }
+    [MaxLength(MAX_LENGHT)] public LogTypeBy LogTypeBy { get; set; }
     public uint Revision { get; set; }
 
     private LogEntry(
@@ -26,8 +27,9 @@ public class LogEntry
         string? previousValue,
         string? currentValue,
         DateTime changedAt,
-        Guid changedBy,
+        Guid? changedBy,
         LogType logType,
+        LogTypeBy logTypeBy,
         uint revision
     )
     {
@@ -40,6 +42,7 @@ public class LogEntry
         ChangedAt = changedAt;
         ChangedBy = changedBy;
         LogType = logType;
+        LogTypeBy = logTypeBy;
         Revision = revision;
     }
 
@@ -50,8 +53,9 @@ public class LogEntry
         string? previousValue,
         string? currentValue,
         DateTime changedAt,
-        Guid changedByUser,
+        Guid? changedByUser,
         LogType logType,
+        LogTypeBy logTypeBy,
         uint revision
     )
     {
@@ -63,6 +67,7 @@ public class LogEntry
                             changedAt,
                             changedByUser,
                             logType,
+                            logTypeBy,
                             revision
                            );
     }
