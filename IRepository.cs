@@ -6,5 +6,5 @@ namespace DbLogger;
 
 public interface IRepository
 {
-    Task SaveChangesAsync(Guid userId, CancellationToken cancellationToken);
+    Task SaveChangesWithLogAsync(Guid? userId, CancellationToken cancellationToken);
 }

@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace EntityEntryLog;
 
-public abstract class RepositoryBase<TEntity>
+public abstract class RepositoryBase : IRepository
 {
     private readonly DbContext _ctx;
 
     /// <inheritdoc />
-      public async Task SaveChangesAsync(Guid userId, CancellationToken cancellationToken)
+      public async Task SaveChangesWithLogAsync(Guid? userId, CancellationToken cancellationToken)
       {
          try
          {
@@ -77,7 +77,7 @@ public abstract class RepositoryBase<TEntity>
       }
 
       private async Task GetModifiedEntryProperties(
-         Guid userId,
+         Guid? userId,
          Guid objectId,
          EntityEntry entityEntry,
          ICollection<LogEntry> list,
@@ -98,13 +98,14 @@ public abstract class RepositoryBase<TEntity>
                                      date,
                                      userId,
                                      LogType.Modified,
+                                     userId == null ? LogTypeBy.System : LogTypeBy.User,
                                      await GetRevision(context, property, cancellationToken)
                                     ));
          }
       }
 
       private async Task GetAddedEntryProperties(
-         Guid userId,
+         Guid? userId,
          Guid objectId,
          EntityEntry entityEntry,
          ICollection<LogEntry> list,
@@ -132,12 +133,13 @@ public abstract class RepositoryBase<TEntity>
                                      date,
                                      userId,
                                      LogType.Added,
+                                     userId == null ? LogTypeBy.System : LogTypeBy.User,
                                      await GetRevision(context, property, cancellationToken)));
          }
       }
 
       private async Task GetDeletedEntryProperties(
-         Guid userId,
+         Guid? userId,
          Guid objectId,
          EntityEntry entityEntry,
          ICollection<LogEntry> list,
@@ -165,6 +167,7 @@ public abstract class RepositoryBase<TEntity>
                                      date,
                                      userId,
                                      LogType.Deleted,
+                                     userId == null ? LogTypeBy.System : LogTypeBy.User,
                                      await GetRevision(context, property, cancellationToken)));
          }
       }
