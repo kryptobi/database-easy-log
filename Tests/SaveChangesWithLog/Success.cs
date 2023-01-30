@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DbLogger.Domain;
 using DbLogger.Tests.DbContext;
 using DbLogger.Tests.Misc;
 using DbLogger.Tests.Repositories;
@@ -10,7 +9,7 @@ using Xunit;
 
 namespace DbLogger.Tests.SaveChangesWithLog;
 
-public class Success
+public class Success : IntegrationTestsBase<LogSuccessDbContext>
 {
     private readonly LogSuccessRepository _logSuccessRepository;
     private readonly LogSuccessDbContext _logSuccessDbContext;
