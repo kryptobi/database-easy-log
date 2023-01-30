@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DbLogger;
+namespace DbLogger.Repository;
 
 public interface IRepository
 {

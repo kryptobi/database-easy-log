@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using EntityEntryLog;
+using DbLogger.Domain;
 
 namespace DbLogger;
 

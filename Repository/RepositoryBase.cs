@@ -4,11 +4,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DbLogger;
+using DbLogger.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace EntityEntryLog;
+namespace DbLogger.Repository;
 
 public abstract class RepositoryBase : IRepository
 {

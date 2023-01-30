@@ -1,6 +1,6 @@
 using Thinktecture;
 
-namespace DbLogger;
+namespace DbLogger.Domain;
 
 public sealed partial class LogTypeBy : IEnum<string>
 {
