@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -12,6 +13,7 @@ where T : Microsoft.EntityFrameworkCore.DbContext
 
     private T _testDbContext;
     protected T TestDbContext => _testDbContext ??= CreateContext();
+    private readonly DbContextOptionsBuilder<T> _optionBuilder;
 
     private T CreateContext()
     {
