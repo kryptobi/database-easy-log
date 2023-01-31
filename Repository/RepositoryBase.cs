@@ -31,7 +31,10 @@ public abstract class RepositoryBase : IRepository
          var list = new Collection<LogEntry>();
          foreach (var entityEntry in _ctx.ChangeTracker.Entries())
          {
-            var objectId = (Guid)(entityEntry.CurrentValues["Id"] ?? Guid.Empty);
+            if (entityEntry.CurrentValues.TryGetValue<Guid>("Id", out var objectId) == false)
+            {
+               objectId = Guid.Empty; 
+            }
 
             switch (entityEntry.State)
             {
