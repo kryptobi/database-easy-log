@@ -1,4 +1,4 @@
-# easyLog
+# dblogger (easyLog)
 DB Context Logger independent of the database driver
 
 ## History
@@ -34,13 +34,13 @@ The repository should inherit from the Interface ```IRepository```. The interfac
 1. `SaveChangesWithLog(Guid? userId, Cancellationtoken token)`
 
  This method will save any changes at your entity which are saved in the ef core changetracker.
-The userId should be this one who changed the entity. if there is no userId given, the log entry will saved it as an "system" changed event
+The userId should be this one who changed the entity. if there is no userId given, the log entry will saved it as an system changed event
 
 2. SaveChangesWithLog(Guid? userId, IReadOnlyList<strings> propertiesToIgnore, Cancellationtoken token)
 
 This method is similar to the first one but you can give the method a list of property names which will not be logged from your entity.
 
-### configuration
+### Configuration
 First thing first.
 Before we can use the framework, we have to create an migrationscript and configure the entity model builder. your migratescript and modelbuilder which you created should look like this
 
@@ -77,14 +77,14 @@ migrationBuilder.CreateTable(
     .Annotation("MySql:CharSet", "utf8mb4")
     .Annotation("Relational:Collation", "utf8mb4_unicode_ci");
 ```
-### how to create an entry
+### How to create an entry
 The only you have to do is to use your repository which inherits the IRepostory and use one of the SaveChangesWithLog Methods
 
-### result
+### Result
 Once you create a logentry your table should look like this
 ![log table](table.png)
 
-### happy logging
+### Happy logging
 
 thanks to [sami](https://github.com/SamiSul) for support 
 
