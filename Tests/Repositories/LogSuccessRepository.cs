@@ -7,7 +7,7 @@ public class LogSuccessRepository : RepositoryBase
 {
     private readonly LogSuccessDbContext _ctx;
     
-    public LogSuccessRepository(LogSuccessDbContext ctx)
+    public LogSuccessRepository(LogSuccessDbContext ctx) : base(ctx)
     {
         _ctx = ctx;
     }
