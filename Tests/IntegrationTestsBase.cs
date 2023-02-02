@@ -2,12 +2,13 @@ using System;
 using System.Data.Common;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace DbLogger.Tests;
 
-public class IntegrationTestsBase<T> : IDisposable
-where T : Microsoft.EntityFrameworkCore.DbContext
+public class IntegrationTestsBase<T> : IDesignTimeDbContextFactory<T>, IDisposable
+    where T : Microsoft.EntityFrameworkCore.DbContext
 {
     private readonly DbConnection _connection;
 
@@ -19,7 +20,8 @@ where T : Microsoft.EntityFrameworkCore.DbContext
     {
         var ctx = (T)Activator.CreateInstance(typeof(T), _optionBuilder.Options)!;
         ctx.Database.OpenConnection();
-        
+        ctx.Database.Migrate();
+
         return ctx;
     }
 
@@ -38,5 +40,10 @@ where T : Microsoft.EntityFrameworkCore.DbContext
     public void Dispose()
     {
         _testDbContext?.Dispose();
+    }
+
+    public T CreateDbContext(string[] args)
+    {
+        return CreateContext();
     }
 }
