@@ -1,48 +1,48 @@
 # dblogger (easyLog)
-DB Context Logger independent of the database driver
+DB Context Logger independent of the database driver.
 
 ## History
-We decided to use MYsql in our company for our database provider. 
-Once we needed to log anything what changed at the entity we cannot use some stuff like temporal table or something else. 
-So we developed an similar framework to log changes to the entity by the easiest way
+We decided to use MySql in our company for our database provider.
+Once we needed to log anything that changed at the entity we cannot use some stuff like temporal table or something else.
+So we developed a similar framework to log changes to the entity the easiest way.
 
 ## Description
-This project is an easy way to log any entity changes by the dbContext wether you **added**, **modified** or **delete** an entity. 
+This project is an easy way to log any entity changes by the dbContext whether you **added**, **modified** or **deleted** an entity.
 Your project should be structured according to the repository pattern. Your repository just needs to inherit from the interface.
 
 Once you configured everthing its very easy to log your changes.
 
-the log table have this structure:
+The log table has this structure:
 | Syntax      | Description |
 | ----------- | ----------- |
 | Id          | Generated PK
 | Context   | Which entity has changed        |
-| ContextId   | if the changed entity got a id        |
-| Property   | the property name of the changed entity        |
-| PreviousValue   | the previous value of the changed property        |
-| CurrentValue   | the previous value of the changed property        |
-| ChangedAt   | When does it change        |
-| ChangedBy   | who changed it        |
+| ContextId   | If the changed entity got a id        |
+| Property   | The property name of the changed entity        |
+| PreviousValue   | The previous value of the changed property        |
+| CurrentValue   | The previous value of the changed property        |
+| ChangedAt   | When did it change        |
+| ChangedBy   | Who changed it        |
 | LogType   | modifed/added/deleted        |
-| LogTypeBy   | user / system        |
-| Revision   | in which "step" changed anything        |
+| LogTypeBy   | user/system        |
+| Revision   | In which "step" changed anything        |
 
 ## How to use
-### inherit your repository
-The repository should inherit from the Interface ```IRepository```. The interface implemented two Methods.
+### inherit from ```RepositoryBase``` in your repository
+The repository should implement the Interface ```IRepository```. The interface contains two Methods:
 
 1. `SaveChangesWithLog(Guid? userId, Cancellationtoken token)`
 
  This method will save any changes at your entity which are saved in the ef core changetracker.
 The userId should be this one who changed the entity. if there is no userId given, the log entry will saved it as an system changed event
 
-2. SaveChangesWithLog(Guid? userId, IReadOnlyList<strings> propertiesToIgnore, Cancellationtoken token)
+2. `SaveChangesWithLog(Guid? userId, IReadOnlyList<strings> propertiesToIgnore, Cancellationtoken token)`
 
 This method is similar to the first one but you can give the method a list of property names which will not be logged from your entity.
 
 ### Configuration
-First thing first.
-Before we can use the framework, we have to create an migrationscript and configure the entity model builder. your migratescript and modelbuilder which you created should look like this
+First things first.
+Before we can use the framework, we have to create a migration-script and configure the entity model-builder. Your migration-script and model-builder which you created should look like this:
 
 ```csharp
 public void Configure(EntityTypeBuilder<LogEntry> builder)
@@ -78,14 +78,14 @@ migrationBuilder.CreateTable(
     .Annotation("Relational:Collation", "utf8mb4_unicode_ci");
 ```
 ### How to create an entry
-The only you have to do is to use your repository which inherits the IRepostory and use one of the SaveChangesWithLog Methods
+The only way you have is to use your repository which implements the IRepostory and use one of the SaveChangesWithLog methods
 
 ### Result
-Once you create a logentry your table should look like this
+Once you create a LogEntry, your table should look like this:
 ![log table](table.png)
 
 ### Happy logging
 
-thanks to [sami](https://github.com/SamiSul) for support 
+Thanks to [sami](https://github.com/SamiSul) for the support
 
 visit our company [traperto](https://www.traperto.com)
