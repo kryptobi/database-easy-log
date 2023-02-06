@@ -8,7 +8,7 @@ So we developed a similar framework to log changes to the entity the easiest way
 
 ## Description
 This framework is an easy way to log any entity changes by the dbContext whether you **added**, **modified** or **deleted** an entity.
-Your project should be structured according to the repository pattern. Your repository just needs to inherit from the interface `ILogRepository`.
+Your project should be structured according to the repository pattern. Your repository just needs to inherit from the base `LogRepositoryBase`.
 
 Once you configured everthing its very easy to log your changes.
 
@@ -40,7 +40,7 @@ PM> NuGet\Install-Package DatabaseEasyLog -Version 1.0.0
 <PackageReference Include="DatabaseEasyLog" Version="1.0.0"/>
 ```
 ### inherit from ```RepositoryBase``` in your repository
-The repository should inherit by the interface ```ILogRepository```. The interface contains two Methods:
+The repository should inherit by the class ```LogRepositoryBase```. The interface contains two Methods:
 
 1. `SaveChangesWithLog(Guid? userId, Cancellationtoken token)`
 
@@ -89,7 +89,7 @@ migrationBuilder.CreateTable(
     .Annotation("Relational:Collation", "utf8mb4_unicode_ci");
 ```
 ### How to create an entry
-You can use booth methods if your repository inherits the interface ILogRepository.
+You can use booth methods if your repository inherits the class LogRepositoryBase.
 
 ### Result
 Once you create a LogEntry, your table should look like this:
