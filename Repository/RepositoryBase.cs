@@ -15,81 +15,124 @@ public abstract class RepositoryBase : IRepository
     private readonly DbContext _ctx;
 
     /// <inheritdoc />
-      public async Task SaveChangesWithLogAsync(Guid? userId, CancellationToken cancellationToken)
-      {
-         try
-         {
-            _ = _ctx.Set<LogEntry>();
-         }
-         catch (Exception e)
-         {
-            throw new Exception($"No Log Table configured. Message: {e.Message}");
-         }
+    public async Task SaveChangesWithLogAsync(Guid? userId, CancellationToken cancellationToken = default)
+    {
+        EnsureValid();
 
+        var logEntries = await LogEntries(userId,
+                                          _ctx.ChangeTracker.Entries().ToList(),
+                                          new List<string>(),
+                                          cancellationToken);
 
-         var date = DateTime.UtcNow;
-         var list = new Collection<LogEntry>();
-         foreach (var entityEntry in _ctx.ChangeTracker.Entries())
-         {
+        _ctx.AddRange(logEntries);
+        await _ctx.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task SaveChangesWithLogAsync(Guid? userId,
+                                              IReadOnlyList<string> ignoreProperties,
+                                              CancellationToken cancellationToken = default)
+    {
+        EnsureValid();
+
+        var logEntries = await LogEntries(
+                                          userId,
+                                          _ctx.ChangeTracker.Entries().ToList(),
+                                          ignoreProperties,
+                                          cancellationToken);
+
+        _ctx.AddRange(logEntries);
+        await _ctx.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task<IReadOnlyList<LogEntry>> LogEntries(
+        Guid? userId,
+        IReadOnlyList<EntityEntry> entries,
+        IReadOnlyList<string> ignoreProperties,
+        CancellationToken cancellationToken = default)
+    {
+        if (!entries.Any())
+        {
+            return new Collection<LogEntry>();
+        }
+
+        var date = DateTime.UtcNow;
+        var list = new Collection<LogEntry>();
+        foreach (var entityEntry in entries)
+        {
             if (entityEntry.CurrentValues.TryGetValue<Guid>("Id", out var objectId) == false)
             {
-               objectId = Guid.Empty; 
+                objectId = Guid.Empty;
             }
 
             switch (entityEntry.State)
             {
-               case EntityState.Deleted:
-                  {
-                     await GetDeletedEntryProperties(userId,
+                case EntityState.Deleted:
+                {
+                    await GetDeletedEntryProperties(userId,
+                                                    objectId,
+                                                    entityEntry,
+                                                    list,
+                                                    ignoreProperties,
+                                                    date,
+                                                    cancellationToken);
+                    break;
+                }
+                case EntityState.Added:
+                {
+                    await GetAddedEntryProperties(userId,
+                                                  objectId,
+                                                  entityEntry,
+                                                  list,
+                                                  ignoreProperties,
+                                                  date,
+                                                  cancellationToken);
+                    break;
+                }
+                case EntityState.Modified:
+                {
+                    await GetModifiedEntryProperties(userId,
                                                      objectId,
                                                      entityEntry,
                                                      list,
+                                                     ignoreProperties,
                                                      date,
                                                      cancellationToken);
-                     break;
-                  }
-               case EntityState.Added:
-                  {
-                     await GetAddedEntryProperties(userId,
-                                                   objectId,
-                                                   entityEntry,
-                                                   list,
-                                                   date,
-                                                   cancellationToken);
-                     break;
-                  }
-               case EntityState.Modified:
-                  {
-                     await GetModifiedEntryProperties(userId,
-                                                      objectId,
-                                                      entityEntry,
-                                                      list,
-                                                      date,
-                                                      cancellationToken);
-                     break;
-                  }
-               case EntityState.Detached:
-               case EntityState.Unchanged:
-               default:
-                  continue;
+                    break;
+                }
+                case EntityState.Detached:
+                case EntityState.Unchanged:
+                default:
+                    continue;
             }
-         }
+        }
 
-         _ctx.AddRange(list);
-         await _ctx.SaveChangesAsync(cancellationToken);
-      }
+        return list;
+    }
 
-      private async Task GetModifiedEntryProperties(
-         Guid? userId,
-         Guid objectId,
-         EntityEntry entityEntry,
-         ICollection<LogEntry> list,
-         DateTime date,
-         CancellationToken cancellationToken
-      )
-      {
-         foreach (var propertyName in entityEntry.Properties.Where(p => p.IsModified))
-         {
+    private void EnsureValid()
+    {
+        try
+        {
+            _ = _ctx.Set<LogEntry>();
+        }
+        catch (Exception e)
+        {
+            throw new Exception($"No Log Table configured. Message: {e.Message}");
+        }
+    }
+
+    private async Task GetModifiedEntryProperties(
+        Guid? userId,
+        Guid objectId,
+        EntityEntry entityEntry,
+        ICollection<LogEntry> list,
+        IReadOnlyList<string> ignoreProperties,
+        DateTime date,
+        CancellationToken cancellationToken
+    )
+    {
+        foreach (var propertyName in entityEntry.Properties.Where(p => p.IsModified && ignoreProperties.Contains(p.Metadata.Name)))
+        {
             var context = entityEntry.Entity.GetType().Name;
             var property = propertyName.Metadata.Name;
 
@@ -104,20 +147,21 @@ public abstract class RepositoryBase : IRepository
                                      userId == null ? LogTypeBy.System : LogTypeBy.User,
                                      await GetRevision(context, property, cancellationToken)
                                     ));
-         }
-      }
+        }
+    }
 
-      private async Task GetAddedEntryProperties(
-         Guid? userId,
-         Guid objectId,
-         EntityEntry entityEntry,
-         ICollection<LogEntry> list,
-         DateTime date,
-         CancellationToken cancellationToken
-      )
-      {
-         foreach (var propertyName in entityEntry.Properties)
-         {
+    private async Task GetAddedEntryProperties(
+        Guid? userId,
+        Guid objectId,
+        EntityEntry entityEntry,
+        ICollection<LogEntry> entries,
+        IReadOnlyList<string> ignoreProperties,
+        DateTime date,
+        CancellationToken cancellationToken
+    )
+    {
+        foreach (var propertyName in entityEntry.Properties.Where(p => ignoreProperties.Contains(p.Metadata.Name)))
+        {
             var context = entityEntry.Entity.GetType().Name;
             var property = propertyName.Metadata.Name;
 
@@ -125,33 +169,34 @@ public abstract class RepositoryBase : IRepository
 
             if (currentValue is null)
             {
-               return;
+                return;
             }
 
-            list.Add(LogEntry.Create(objectId,
-                                     entityEntry.Entity.GetType().Name,
-                                     propertyName.Metadata.Name,
-                                     null,
-                                     currentValue,
-                                     date,
-                                     userId,
-                                     LogType.Added,
-                                     userId == null ? LogTypeBy.System : LogTypeBy.User,
-                                     await GetRevision(context, property, cancellationToken)));
-         }
-      }
+            entries.Add(LogEntry.Create(objectId,
+                                        entityEntry.Entity.GetType().Name,
+                                        propertyName.Metadata.Name,
+                                        null,
+                                        currentValue,
+                                        date,
+                                        userId,
+                                        LogType.Added,
+                                        userId == null ? LogTypeBy.System : LogTypeBy.User,
+                                        await GetRevision(context, property, cancellationToken)));
+        }
+    }
 
-      private async Task GetDeletedEntryProperties(
-         Guid? userId,
-         Guid objectId,
-         EntityEntry entityEntry,
-         ICollection<LogEntry> list,
-         DateTime date,
-         CancellationToken cancellationToken
-      )
-      {
-         foreach (var propertyName in entityEntry.Properties)
-         {
+    private async Task GetDeletedEntryProperties(
+        Guid? userId,
+        Guid objectId,
+        EntityEntry entityEntry,
+        ICollection<LogEntry> list,
+        IReadOnlyList<string> ignoreProperties,
+        DateTime date,
+        CancellationToken cancellationToken
+    )
+    {
+        foreach (var propertyName in entityEntry.Properties.Where(p => ignoreProperties.Contains(p.Metadata.Name)))
+        {
             var context = entityEntry.Entity.GetType().Name;
             var property = propertyName.Metadata.Name;
 
@@ -159,7 +204,7 @@ public abstract class RepositoryBase : IRepository
 
             if (previousValue is null)
             {
-               return;
+                return;
             }
 
             list.Add(LogEntry.Create(objectId,
@@ -172,21 +217,21 @@ public abstract class RepositoryBase : IRepository
                                      LogType.Deleted,
                                      userId == null ? LogTypeBy.System : LogTypeBy.User,
                                      await GetRevision(context, property, cancellationToken)));
-         }
-      }
+        }
+    }
 
-      private async Task<uint> GetRevision(
-         string context,
-         string property,
-         CancellationToken cancellationToken)
-      {
-         var entity = _ctx.Set<LogEntry>();
-         var logEntry = await entity.AsQueryable()
-                                    .Where(l => l.Context == context)
-                                    .Where(l => l.Property == property)
-                                    .OrderByDescending(l => l.Revision)
-                                    .FirstOrDefaultAsync(cancellationToken);
+    private async Task<uint> GetRevision(
+        string context,
+        string property,
+        CancellationToken cancellationToken)
+    {
+        var entity = _ctx.Set<LogEntry>();
+        var logEntry = await entity.AsQueryable()
+                                   .Where(l => l.Context == context)
+                                   .Where(l => l.Property == property)
+                                   .OrderByDescending(l => l.Revision)
+                                   .FirstOrDefaultAsync(cancellationToken);
 
-         return logEntry?.Revision + 1 ?? 1;
-      }
+        return logEntry?.Revision + 1 ?? 1;
+    }
 }
