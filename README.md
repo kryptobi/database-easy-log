@@ -28,6 +28,17 @@ The log table has this structure:
 | Revision   | In which "step" changed anything        |
 
 ## How to use
+### how to install
+```
+dotnet add package DatabaseEasyLog --version 1.0.0
+```
+
+```
+PM> NuGet\Install-Package DatabaseEasyLog -Version 1.0.0
+```
+```
+<PackageReference Include="DatabaseEasyLog" Version="1.0.0"/>
+```
 ### inherit from ```RepositoryBase``` in your repository
 The repository should inherit by the interface ```ILogRepository```. The interface contains two Methods:
 
