@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbLogger", "DbLogger.csproj", "{0CCC119D-A0F3-482B-B87D-EE989CC85EC9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseEasyLog", "DatabaseEasyLog.csproj", "{0CCC119D-A0F3-482B-B87D-EE989CC85EC9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

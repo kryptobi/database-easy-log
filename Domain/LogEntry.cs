@@ -1,8 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using DbLogger.Domain;
 
-namespace DbLogger;
+namespace DatabaseEasyLog.Domain;
 
 public class LogEntry
 {

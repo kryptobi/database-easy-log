@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DbLogger.Repository;
+namespace DatabaseEasyLog.Repository;
 
 public interface ILogRepository
 {

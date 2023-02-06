@@ -4,11 +4,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DbLogger.Domain;
+using DatabaseEasyLog.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace DbLogger.Repository;
+namespace DatabaseEasyLog.Repository;
 
 public abstract class LogRepositoryBase : ILogRepository
 {
