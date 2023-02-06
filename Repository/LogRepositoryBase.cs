@@ -10,11 +10,11 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DbLogger.Repository;
 
-public abstract class RepositoryBase : IRepository
+public abstract class LogRepositoryBase : ILogRepository
 {
     private readonly DbContext _ctx;
 
-    protected RepositoryBase(DbContext ctx)
+    protected LogRepositoryBase(DbContext ctx)
     {
        _ctx = ctx;
     }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DbLogger.Repository;
 
-public interface IRepository
+public interface ILogRepository
 {
     Task SaveChangesWithLogAsync(Guid? userId,
                                  CancellationToken cancellationToken = default);
