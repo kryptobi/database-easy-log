@@ -39,8 +39,8 @@ PM> NuGet\Install-Package DatabaseEasyLog -Version 1.0.0
 ```
 <PackageReference Include="DatabaseEasyLog" Version="1.0.0"/>
 ```
-### inherit from ```RepositoryBase``` in your repository
-The repository should inherit by the class ```LogRepositoryBase```. The interface contains two Methods:
+### inherit from ```LogRepositoryBase``` your repository
+The repository should inherit by the class ```LogRepositoryBase```. The baseclass contains two Methods:
 
 1. `SaveChangesWithLog(Guid? userId, Cancellationtoken token)`
 
