@@ -1,4 +1,4 @@
-# dblogger (easyLog)
+# DatabaseEasyLog
 DB Context Logger independent of the database driver.
 
 ## History
