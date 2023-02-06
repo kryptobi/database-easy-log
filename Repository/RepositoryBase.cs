@@ -14,6 +14,11 @@ public abstract class RepositoryBase : IRepository
 {
     private readonly DbContext _ctx;
 
+    protected RepositoryBase(DbContext ctx)
+    {
+       _ctx = ctx;
+    }
+    
     /// <inheritdoc />
     public async Task SaveChangesWithLogAsync(Guid? userId, CancellationToken cancellationToken = default)
     {
