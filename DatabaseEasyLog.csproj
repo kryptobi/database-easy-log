@@ -3,7 +3,7 @@
         <PackageId>DatabaseEasyLog</PackageId>
         <Title>DatabaseEasyLog</Title>
         <Description>DB Context Logger independent of the database driver</Description>
-        <Version>1.0.0</Version>
+        <Version>1.0.1</Version>
         <Authors>Tobias Janssen, Sami Suleiman</Authors>
         <PackageProjectUrl>https://github.com/kryptobi/dblogger/blob/main/README.md</PackageProjectUrl>
         <PackageTags>db mysql changetracker efcore dblogger log entityframework
