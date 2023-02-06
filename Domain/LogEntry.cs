@@ -9,7 +9,7 @@ public class LogEntry
     private const int MAX_LENGTH_VALUE_TYPES = 255;
     private const int MAX_LENGHT = 10;
     [Key] public Guid Id { get; private init; }
-    public Guid ContextId { get; private set; }
+    public Guid? ContextId { get; private set; }
     public string Context { get; private set; }
     [MaxLength(MAX_LENGTH_VALUE_TYPES)] public string Property { get; private set; }
     [MaxLength(MAX_LENGTH_VALUE_TYPES)] public string? PreviousValue { get; private set; }
@@ -21,7 +21,7 @@ public class LogEntry
     public uint Revision { get; set; }
 
     private LogEntry(
-        Guid contextId,
+        Guid? contextId,
         string context,
         string property,
         string? previousValue,
@@ -47,7 +47,7 @@ public class LogEntry
     }
 
     public static LogEntry Create(
-        Guid contextId,
+        Guid? contextId,
         string context,
         string property,
         string? previousValue,

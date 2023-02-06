@@ -16,7 +16,7 @@ The log table has this structure:
 | Syntax      | Description |
 | ----------- | ----------- |
 | Id          | Generated PK
-| Context   | Which entity has changed        |
+| Context   | Which entity has changed. It will be null if there is no Id given.|
 | ContextId   | If the changed entity got a id        |
 | Property   | The property name of the changed entity        |
 | PreviousValue   | The previous value of the changed property        |

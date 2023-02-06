@@ -64,9 +64,9 @@ public abstract class RepositoryBase : IRepository
         var list = new Collection<LogEntry>();
         foreach (var entityEntry in entries)
         {
-            if (entityEntry.CurrentValues.TryGetValue<Guid>("Id", out var objectId) == false)
+            if (entityEntry.CurrentValues.TryGetValue("Id", out Guid? objectId) == false)
             {
-                objectId = Guid.Empty;
+                objectId = null;
             }
 
             switch (entityEntry.State)
@@ -128,7 +128,7 @@ public abstract class RepositoryBase : IRepository
 
     private async Task GetModifiedEntryProperties(
         Guid? userId,
-        Guid objectId,
+        Guid? objectId,
         EntityEntry entityEntry,
         ICollection<LogEntry> list,
         IReadOnlyList<string> ignoreProperties,
@@ -136,7 +136,10 @@ public abstract class RepositoryBase : IRepository
         CancellationToken cancellationToken
     )
     {
-        foreach (var propertyName in entityEntry.Properties.Where(p => p.IsModified && ignoreProperties.Contains(p.Metadata.Name)))
+        foreach (var propertyName in entityEntry.Properties
+                                                .Where(p => p.IsModified 
+                                                            && ignoreProperties.Contains(p.Metadata.Name))
+                                                )
         {
             var context = entityEntry.Entity.GetType().Name;
             var property = propertyName.Metadata.Name;
@@ -157,7 +160,7 @@ public abstract class RepositoryBase : IRepository
 
     private async Task GetAddedEntryProperties(
         Guid? userId,
-        Guid objectId,
+        Guid? objectId,
         EntityEntry entityEntry,
         ICollection<LogEntry> entries,
         IReadOnlyList<string> ignoreProperties,
@@ -165,7 +168,8 @@ public abstract class RepositoryBase : IRepository
         CancellationToken cancellationToken
     )
     {
-        foreach (var propertyName in entityEntry.Properties.Where(p => ignoreProperties.Contains(p.Metadata.Name)))
+        foreach (var propertyName in entityEntry.Properties
+                                                .Where(p => ignoreProperties.Contains(p.Metadata.Name)))
         {
             var context = entityEntry.Entity.GetType().Name;
             var property = propertyName.Metadata.Name;
@@ -192,7 +196,7 @@ public abstract class RepositoryBase : IRepository
 
     private async Task GetDeletedEntryProperties(
         Guid? userId,
-        Guid objectId,
+        Guid? objectId,
         EntityEntry entityEntry,
         ICollection<LogEntry> list,
         IReadOnlyList<string> ignoreProperties,
