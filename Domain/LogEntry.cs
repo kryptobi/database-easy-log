@@ -71,11 +71,4 @@ public class LogEntry
                             revision
                            );
     }
-
-    public LogEntry SetRevision(uint revision)
-    {
-        Revision = revision;
-
-        return this;
-    }
 }
