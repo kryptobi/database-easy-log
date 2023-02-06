@@ -84,7 +84,7 @@ You can use booth methods if your repository inherits the interface ILogReposito
 Once you create a LogEntry, your table should look like this:
 ![log table](table.png)
 
-### Result
+### Licence
 Licence MIT
 
 ### Happy logging
