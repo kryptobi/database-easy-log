@@ -21,7 +21,7 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
-    <ItemGroup Label="NuGet.Packages">
+    <ItemGroup>
         <PackageReference Include="FluentAssertions" Version="6.9.0"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.12"/>
         <PackageReference Include="Thinktecture.Runtime.Extensions.Json" Version="5.1.0"/>
