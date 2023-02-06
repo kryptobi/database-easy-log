@@ -7,34 +7,34 @@ Once we needed to log anything that changed at the entity we cannot use some stu
 So we developed a similar framework to log changes to the entity the easiest way.
 
 ## Description
-This project is an easy way to log any entity changes by the dbContext whether you **added**, **modified** or **deleted** an entity.
-Your project should be structured according to the repository pattern. Your repository just needs to inherit from the interface.
+This framework is an easy way to log any entity changes by the dbContext whether you **added**, **modified** or **deleted** an entity.
+Your project should be structured according to the repository pattern. Your repository just needs to inherit from the interface `ILogRepository`.
 
 Once you configured everthing its very easy to log your changes.
 
 The log table has this structure:
 | Syntax      | Description |
 | ----------- | ----------- |
-| Id          | Generated PK
-| Context   | Which entity has changed. It will be null if there is no Id given.|
-| ContextId   | If the changed entity got a id        |
-| Property   | The property name of the changed entity        |
-| PreviousValue   | The previous value of the changed property        |
-| CurrentValue   | The previous value of the changed property        |
-| ChangedAt   | When did it change        |
-| ChangedBy   | Who changed it        |
+| Id          | generated PK
+| Context   | which entity has changed|
+| ContextId   | if the changed entity got a id, otherwise it will be null        |
+| Property   | the property name of the changed entity        |
+| PreviousValue   | the previous value of the changed property        |
+| CurrentValue   | the current value of the changed property        |
+| ChangedAt   | when did it change        |
+| ChangedBy   | who changed it        |
 | LogType   | modifed/added/deleted        |
 | LogTypeBy   | user/system        |
 | Revision   | In which "step" changed anything        |
 
 ## How to use
 ### inherit from ```RepositoryBase``` in your repository
-The repository should implement the Interface ```IRepository```. The interface contains two Methods:
+The repository should inherit by the interface ```ILogRepository```. The interface contains two Methods:
 
 1. `SaveChangesWithLog(Guid? userId, Cancellationtoken token)`
 
- This method will save any changes at your entity which are saved in the ef core changetracker.
-The userId should be this one who changed the entity. if there is no userId given, the log entry will saved it as an system changed event
+ This method will save any changes at your entity which are tracked by the ef core changetracker.
+The userId should be this one who changed the entity. if there is no userId given, the log entry will saved it as a system changed event.
 
 2. `SaveChangesWithLog(Guid? userId, IReadOnlyList<strings> propertiesToIgnore, Cancellationtoken token)`
 
@@ -42,7 +42,7 @@ This method is similar to the first one but you can give the method a list of pr
 
 ### Configuration
 First things first.
-Before we can use the framework, we have to create a migration-script and configure the entity model-builder. Your migration-script and model-builder which you created should look like this:
+Before we can use the framework, we have to create a migration-script and configure the entity model-builder. Your migration-script and model-builder which you have to created should look like this:
 
 ```csharp
 public void Configure(EntityTypeBuilder<LogEntry> builder)
@@ -78,7 +78,7 @@ migrationBuilder.CreateTable(
     .Annotation("Relational:Collation", "utf8mb4_unicode_ci");
 ```
 ### How to create an entry
-The only way you have is to use your repository which implements the IRepostory and use one of the SaveChangesWithLog methods
+You can use booth methods if your repository inherits the interface ILogRepository.
 
 ### Result
 Once you create a LogEntry, your table should look like this:
